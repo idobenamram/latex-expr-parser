@@ -1,0 +1,31 @@
+---
+source: src/lexer.rs
+expression: tokens
+---
+[
+    Token {
+        kind: Identifier,
+        start: 0,
+        end: 1,
+    },
+    Token {
+        kind: WhiteSpace,
+        start: 1,
+        end: 1,
+    },
+    Token {
+        kind: Dot,
+        start: 2,
+        end: 6,
+    },
+    Token {
+        kind: WhiteSpace,
+        start: 7,
+        end: 7,
+    },
+    Token {
+        kind: Identifier,
+        start: 8,
+        end: 9,
+    },
+]

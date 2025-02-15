@@ -1,0 +1,27 @@
+---
+source: src/parser.rs
+expression: ast
+---
+BinaryOpNode {
+    op: Token {
+        kind: Plus,
+        start: 2,
+        end: 2,
+    },
+    left: BinaryOpNode {
+        op: Token {
+            kind: Plus,
+            start: 6,
+            end: 6,
+        },
+        left: Identifier(
+            "c",
+        ),
+        right: Identifier(
+            "b",
+        ),
+    },
+    right: Identifier(
+        "a",
+    ),
+}
