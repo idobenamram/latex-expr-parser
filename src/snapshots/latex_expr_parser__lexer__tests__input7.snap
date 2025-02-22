@@ -6,31 +6,41 @@ expression: tokens
     Token {
         kind: Identifier,
         start: 0,
-        end: 6,
-    },
-    Token {
-        kind: RightBrace,
-        start: 6,
-        end: 6,
+        end: 0,
+        subscript: Some(
+            TokenSubscript {
+                start: 3,
+                end: 5,
+            },
+        ),
     },
     Token {
         kind: WhiteSpace,
         start: 7,
         end: 7,
+        subscript: None,
     },
     Token {
         kind: Plus,
         start: 8,
         end: 8,
+        subscript: None,
     },
     Token {
         kind: WhiteSpace,
         start: 9,
         end: 9,
+        subscript: None,
     },
     Token {
         kind: Identifier,
         start: 10,
-        end: 13,
+        end: 10,
+        subscript: Some(
+            TokenSubscript {
+                start: 12,
+                end: 12,
+            },
+        ),
     },
 ]

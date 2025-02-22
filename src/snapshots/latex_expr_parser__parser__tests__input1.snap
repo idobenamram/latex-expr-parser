@@ -7,21 +7,26 @@ BinaryOpNode {
         kind: Plus,
         start: 6,
         end: 6,
+        subscript: None,
     },
     left: BinaryOpNode {
         op: Token {
             kind: Plus,
             start: 2,
             end: 2,
+            subscript: None,
         },
-        left: Identifier(
-            "a",
-        ),
-        right: Identifier(
-            "b",
-        ),
+        left: Identifier {
+            name: "a",
+            subscript: None,
+        },
+        right: Identifier {
+            name: "b",
+            subscript: None,
+        },
     },
-    right: Identifier(
-        "c",
-    ),
+    right: Identifier {
+        name: "c",
+        subscript: None,
+    },
 }

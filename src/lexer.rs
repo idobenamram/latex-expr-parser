@@ -43,21 +43,39 @@ pub(crate) enum TokenKind {
 
 #[cfg_attr(feature = "serde", derive(Serialize))]
 #[derive(Debug, Clone)]
-pub(crate) struct Token {
-    pub(crate) kind: TokenKind,
+pub(crate) struct TokenSubscript {
     pub(crate) start: usize,
     pub(crate) end: usize,
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize))]
+#[derive(Debug, Clone)]
+pub(crate) struct Token {
+    pub(crate) kind: TokenKind,
+    pub(crate) start: usize,
+    pub(crate) end: usize,
+    pub(crate) subscript: Option<TokenSubscript>,
+}
+
 impl Token {
-    pub fn new(kind: TokenKind, start: usize, end: usize) -> Self {
-        Self { kind, start, end }
+    pub fn new(kind: TokenKind, start: usize, end: usize, subscript: Option<TokenSubscript>) -> Self {
+        Self { kind, start, end, subscript }
     }
     pub fn single(kind: TokenKind, pos: usize) -> Self {
         Self {
             kind,
             start: pos,
             end: pos,
+            subscript: None,
+        }
+    }
+
+    pub fn end(pos: usize) -> Self {
+        Self {
+            kind: TokenKind::EOF,
+            start: pos,
+            end: pos,
+            subscript: None,
         }
     }
 }
@@ -75,11 +93,7 @@ impl<'s> Lexer<'s> {
 
     fn whitespace(&mut self, start: usize) -> Token {
         self.s.eat_whitespace();
-        Token {
-            kind: TokenKind::WhiteSpace,
-            start,
-            end: self.s.cursor() - 1,
-        }
+        Token::new(TokenKind::WhiteSpace, start, self.s.cursor() - 1, None)
     }
 
     fn latex_command(&mut self, start: usize) -> Token {
@@ -89,32 +103,39 @@ impl<'s> Lexer<'s> {
             "cdot" => TokenKind::Dot,
             _ => panic!("not supported latex command: {}", command_name),
         };
-        Token {
-            kind,
-            start,
-            end: self.s.cursor() - 1,
-        }
+        Token::new(kind, start, self.s.cursor() - 1, None)
     }
 
     fn identifier(&mut self, start: usize) -> Token {
         // eat while alphabetic characters
         self.s.eat_while(|c: char| c.is_alphabetic());
+        let identifier_end = self.s.cursor() - 1;
 
         // an identifier can have a subscript which will be followed either by a `{` or one more alphanumeric character
         if self.s.peek() == Some('_') {
             self.s.eat();
-            match self.s.peek() {
+            let subscript = match self.s.peek() {
                 Some('{') => {
+                    // skip the `{`
+                    let subscript_start = self.s.cursor() + 1;
                     self.s.eat_while(|c: char| c != '}');
+                    let subscript_end = self.s.cursor() - 1;
+                    // skip the `}`
+                    self.s.eat();
+                    Some(TokenSubscript { start: subscript_start, end: subscript_end })
                 }
                 Some(c) if c.is_alphanumeric() => {
+                    let subscript_pos = self.s.cursor();
                     self.s.eat();
+                    Some(TokenSubscript { start: subscript_pos, end: subscript_pos })
                 }
-                None => {}
-                _ => {}
-            }
+                None => {None}
+                _ => {None}
+            };
+            Token::new(TokenKind::Identifier, start, identifier_end, subscript)
+        } else {
+            Token::new(TokenKind::Identifier, start, identifier_end, None)
         }
-        Token::new(TokenKind::Identifier, start, self.s.cursor())
     }
 
     fn latex(&mut self, c: char, start: usize) -> Token {
@@ -141,11 +162,7 @@ impl<'s> Lexer<'s> {
         match self.s.eat() {
             Some(c) if c.is_whitespace() => self.whitespace(start),
             Some(c) => self.latex(c, start),
-            None => Token {
-                kind: TokenKind::EOF,
-                start,
-                end: start,
-            },
+            None => Token::end(start),
         }
     }
 }

@@ -11,7 +11,10 @@ use serde::Serialize;
 #[cfg_attr(feature = "serde", derive(Serialize))]
 #[derive(Debug)]
 pub enum ASTNode {
-    Identifier(String),
+    Identifier {
+        name: String,
+        subscript: Option<String>,
+    },
     BinaryOpNode {
         op: Token,
         left: Box<ASTNode>,
@@ -49,14 +52,14 @@ impl TokenStream {
     fn next(&mut self) -> Token {
         self.tokens
             .pop()
-            .unwrap_or(Token::new(TokenKind::EOF, 0, 0))
+            .unwrap_or(Token::end(0))
     }
 
     fn peek(&self) -> Token {
         self.tokens
             .last()
             .cloned()
-            .unwrap_or(Token::new(TokenKind::EOF, 0, 0))
+            .unwrap_or(Token::end(0))
     }
 }
 
@@ -99,11 +102,17 @@ impl<'s> Parser<'s> {
     fn parse_expr(&mut self, min_bp: u8) -> ASTNode {
         let token = self.stream.next();
         let mut lhs = match token {
-            Token {
-                kind: TokenKind::Identifier,
-                start,
-                end,
-            } => ASTNode::Identifier(self.input[start..end].to_string()),
+            t if t.kind == TokenKind::Identifier => {
+                let name = self.input[t.start..=t.end].to_string();
+
+                let subscript = if let Some(subscript) = t.subscript {
+                    let subscript_str = self.input[subscript.start..=subscript.end].to_string();
+                    Some(subscript_str)
+                } else {
+                    None
+                };
+                ASTNode::Identifier { name, subscript }
+            }
             tok if tok.kind == TokenKind::LeftParen => {
                 let lhs = self.parse_expr(0);
                 let next_token = self.stream.next();
