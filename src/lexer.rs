@@ -33,6 +33,10 @@ pub(crate) enum TokenKind {
     Plus,
     /// A minus, `-`
     Minus,
+    /// A multiplication, `*`
+    Multiply,
+    /// A division, `/`
+    Divide,
     /// End of file
     EOF,
 }
@@ -97,6 +101,8 @@ impl<'s> Lexer<'s> {
             '\\' => self.latex_command(start),
             '+' => Token::single(TokenKind::Plus, start),
             '-' => Token::single(TokenKind::Minus, start),
+            '*' => Token::single(TokenKind::Multiply, start),
+            '/' => Token::single(TokenKind::Divide, start),
             '{' => Token::single(TokenKind::LeftBrace, start),
             '}' => Token::single(TokenKind::RightBrace, start),
             '[' => Token::single(TokenKind::LeftBracket, start),
@@ -109,7 +115,7 @@ impl<'s> Lexer<'s> {
                 Token::new(TokenKind::Identifier, start, self.s.cursor())
             }
 
-            _ => panic!("don't support unicode characters yet"),
+            c => panic!("don't support unicode characters yet: {}", c),
         }
     }
 

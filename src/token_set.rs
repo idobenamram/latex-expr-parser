@@ -37,6 +37,8 @@ pub(crate) const INFIX_OPERATORS: TokenKindSet = TokenKindSet::new(&[
     TokenKind::Minus,
     TokenKind::Wedge,
     TokenKind::Dot,
+    TokenKind::Multiply,
+    TokenKind::Divide,
 ]);
 
 pub(crate) const PREFIX_OPERATORS: TokenKindSet = TokenKindSet::new(&[

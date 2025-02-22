@@ -1,0 +1,72 @@
+---
+source: src/parser.rs
+assertion_line: 182
+expression: ast
+---
+BinaryOpNode {
+    op: Token {
+        kind: Plus,
+        start: 23,
+        end: 23,
+    },
+    left: BinaryOpNode {
+        op: Token {
+            kind: Multiply,
+            start: 3,
+            end: 3,
+        },
+        left: UnaryOpNode {
+            op: Token {
+                kind: Minus,
+                start: 0,
+                end: 0,
+            },
+            operand: Identifier(
+                "b",
+            ),
+        },
+        right: BinaryOpNode {
+            op: Token {
+                kind: Plus,
+                start: 10,
+                end: 10,
+            },
+            left: UnaryOpNode {
+                op: Token {
+                    kind: Minus,
+                    start: 6,
+                    end: 6,
+                },
+                operand: Identifier(
+                    "ca",
+                ),
+            },
+            right: BinaryOpNode {
+                op: Token {
+                    kind: Dot,
+                    start: 14,
+                    end: 18,
+                },
+                left: Identifier(
+                    "a",
+                ),
+                right: Identifier(
+                    "c",
+                ),
+            },
+        },
+    },
+    right: BinaryOpNode {
+        op: Token {
+            kind: Wedge,
+            start: 27,
+            end: 32,
+        },
+        left: Identifier(
+            "a",
+        ),
+        right: Identifier(
+            "b",
+        ),
+    },
+}

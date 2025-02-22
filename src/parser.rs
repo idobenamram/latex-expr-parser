@@ -2,7 +2,7 @@
 /// based on matklad's pratt parser blog https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
 use crate::{
     lexer::{Lexer, Token, TokenKind},
-    token_set::OPERATORS,
+    token_set::{OPERATORS, PREFIX_OPERATORS},
 };
 
 #[cfg(feature = "serde")]
@@ -16,6 +16,10 @@ pub enum ASTNode {
         op: Token,
         left: Box<ASTNode>,
         right: Box<ASTNode>,
+    },
+    UnaryOpNode {
+        op: Token,
+        operand: Box<ASTNode>,
     },
 }
 
@@ -56,13 +60,21 @@ impl TokenStream {
     }
 }
 
+fn prefix_binding_power(op: &Token) -> ((), u8) {
+    match op.kind {
+        TokenKind::Plus | TokenKind::Minus => ((), 7),
+        _ => panic!("bad prefix operator: {:?}", op),
+    }
+}
+
 fn postfix_binding_power(op: &Token) -> Option<(u8, ())> {
     todo!()
 }
 
 fn infix_binding_power(op: &Token) -> Option<(u8, u8)> {
     match op.kind {
-        TokenKind::Plus | TokenKind::Minus => Some((1, 2)),
+        TokenKind::Plus | TokenKind::Minus => Some((3, 4)),
+        TokenKind::Multiply | TokenKind::Divide | TokenKind::Wedge | TokenKind::Dot => Some((5, 6)),
         _ => None,
     }
 }
@@ -86,7 +98,6 @@ impl<'s> Parser<'s> {
 
     fn parse_expr(&mut self, min_bp: u8) -> ASTNode {
         let token = self.stream.next();
-        println!("parsed token: {:?}", token);
         let mut lhs = match token {
             Token {
                 kind: TokenKind::Identifier,
@@ -94,19 +105,19 @@ impl<'s> Parser<'s> {
                 end,
             } => ASTNode::Identifier(self.input[start..end].to_string()),
             tok if tok.kind == TokenKind::LeftParen => {
-                println!("parsed left paren");
                 let lhs = self.parse_expr(0);
                 let next_token = self.stream.next();
                 assert_eq!(next_token.kind, TokenKind::RightParen);
-                println!("parsed paren pair");
                 lhs
             }
-            // Token::Op(op) => {
-            //     let ((), r_bp) = prefix_binding_power(op);
-            //     let rhs = expr_bp(lexer, r_bp);
-            //     print!("{} ", op);
-            //     S::Cons(op, vec![rhs])
-            // }
+            t if PREFIX_OPERATORS.contains(t.kind) => {
+                let ((), r_bp) = prefix_binding_power(&t);
+                let rhs = self.parse_expr(r_bp);
+                ASTNode::UnaryOpNode {
+                    op: t,
+                    operand: Box::new(rhs),
+                }
+            }
             t => panic!("bad token: {:?}", t),
         };
 
@@ -164,6 +175,7 @@ mod tests {
     #[rstest]
     #[case("input1", "a + b + c")]
     #[case("input2", "(a + b) + c")]
+    #[case("input3", "-b * (-ca + a \\cdot c) + a \\wedge b")]
     fn test_parser(#[case] name: &str, #[case] input: &str) {
         let mut parser = Parser::new(input);
         let ast = parser.parse();

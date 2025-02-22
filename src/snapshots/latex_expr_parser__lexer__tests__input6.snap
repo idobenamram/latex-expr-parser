@@ -1,0 +1,71 @@
+---
+source: src/lexer.rs
+expression: tokens
+---
+[
+    Token {
+        kind: Identifier,
+        start: 0,
+        end: 1,
+    },
+    Token {
+        kind: WhiteSpace,
+        start: 1,
+        end: 1,
+    },
+    Token {
+        kind: Wedge,
+        start: 2,
+        end: 7,
+    },
+    Token {
+        kind: WhiteSpace,
+        start: 8,
+        end: 8,
+    },
+    Token {
+        kind: Identifier,
+        start: 9,
+        end: 10,
+    },
+    Token {
+        kind: WhiteSpace,
+        start: 10,
+        end: 10,
+    },
+    Token {
+        kind: Wedge,
+        start: 11,
+        end: 16,
+    },
+    Token {
+        kind: WhiteSpace,
+        start: 17,
+        end: 17,
+    },
+    Token {
+        kind: Identifier,
+        start: 18,
+        end: 19,
+    },
+    Token {
+        kind: WhiteSpace,
+        start: 19,
+        end: 19,
+    },
+    Token {
+        kind: Wedge,
+        start: 20,
+        end: 25,
+    },
+    Token {
+        kind: WhiteSpace,
+        start: 26,
+        end: 26,
+    },
+    Token {
+        kind: Identifier,
+        start: 27,
+        end: 28,
+    },
+]
