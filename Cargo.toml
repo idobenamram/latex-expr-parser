@@ -3,9 +3,27 @@ name = "latex-expr-parser"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
 unscanny =  "0.1.0"
+wasm-bindgen = { version = "0.2", optional = true }
+serde = { version = "1.0", features = ["derive"], optional = true }
+serde_json = { version = "1.0", optional = true }
 
 [dev-dependencies]
 rstest = "0.12.0"
 insta = "1.42.1"
+
+[profile.release]
+opt-level = 3
+lto = true
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ['-O4']
+
+[features]
+default = [] # No default features
+wasm = ["dep:wasm-bindgen", "serde"] # Enable `wasm-bindgen` only for WASM builds
+serde = ["dep:serde", "dep:serde_json"] # Enable `serde` only for WASM builds

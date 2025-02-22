@@ -5,6 +5,10 @@ use crate::{
     token_set::OPERATORS,
 };
 
+#[cfg(feature = "serde")]
+use serde::Serialize;
+
+#[cfg_attr(feature = "serde", derive(Serialize))]
 #[derive(Debug)]
 pub enum ASTNode {
     Identifier(String),

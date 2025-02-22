@@ -2,6 +2,10 @@
 /// heavely based on typst lexer implementation (https://github.com/typst/typst/blob/main/crates/typst-syntax/src/lexer.rs)
 use unscanny::Scanner;
 
+#[cfg(feature = "serde")]
+use serde::Serialize;
+
+#[cfg_attr(feature = "serde", derive(Serialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub(crate) enum TokenKind {
@@ -33,6 +37,7 @@ pub(crate) enum TokenKind {
     EOF,
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize))]
 #[derive(Debug, Clone)]
 pub(crate) struct Token {
     pub(crate) kind: TokenKind,
