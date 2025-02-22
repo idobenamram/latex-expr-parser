@@ -96,6 +96,27 @@ impl<'s> Lexer<'s> {
         }
     }
 
+    fn identifier(&mut self, start: usize) -> Token {
+        // eat while alphabetic characters
+        self.s.eat_while(|c: char| c.is_alphabetic());
+
+        // an identifier can have a subscript which will be followed either by a `{` or one more alphanumeric character
+        if self.s.peek() == Some('_') {
+            self.s.eat();
+            match self.s.peek() {
+                Some('{') => {
+                    self.s.eat_while(|c: char| c != '}');
+                }
+                Some(c) if c.is_alphanumeric() => {
+                    self.s.eat();
+                }
+                None => {}
+                _ => {}
+            }
+        }
+        Token::new(TokenKind::Identifier, start, self.s.cursor())
+    }
+
     fn latex(&mut self, c: char, start: usize) -> Token {
         match c {
             '\\' => self.latex_command(start),
@@ -109,11 +130,7 @@ impl<'s> Lexer<'s> {
             ']' => Token::single(TokenKind::RightBracket, start),
             '(' => Token::single(TokenKind::LeftParen, start),
             ')' => Token::single(TokenKind::RightParen, start),
-
-            c if c.is_alphabetic() => {
-                self.s.eat_while(|c: char| c.is_alphabetic());
-                Token::new(TokenKind::Identifier, start, self.s.cursor())
-            }
+            c if c.is_alphabetic() => self.identifier(start),
 
             c => panic!("don't support unicode characters yet: {}", c),
         }
@@ -145,6 +162,8 @@ mod tests {
     #[case("input4", "a \\wedge b")]
     #[case("input5", "a \\cdot b")]
     #[case("input6", "a \\wedge b \\wedge c \\wedge d")]
+    #[case("input7", "a_{123} + b_s")]
+    #[case("input8", "a_sb")]
     fn test_lexer(#[case] name: &str, #[case] input: &str) {
         let mut lexer = Lexer::new(input);
         let mut tokens = vec![];

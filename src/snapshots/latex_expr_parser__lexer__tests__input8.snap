@@ -1,0 +1,16 @@
+---
+source: src/lexer.rs
+expression: tokens
+---
+[
+    Token {
+        kind: Identifier,
+        start: 0,
+        end: 3,
+    },
+    Token {
+        kind: Identifier,
+        start: 3,
+        end: 4,
+    },
+]

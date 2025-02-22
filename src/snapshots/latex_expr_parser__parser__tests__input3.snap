@@ -1,6 +1,5 @@
 ---
 source: src/parser.rs
-assertion_line: 182
 expression: ast
 ---
 BinaryOpNode {
