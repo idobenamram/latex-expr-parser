@@ -37,6 +37,8 @@ pub(crate) enum TokenKind {
     Multiply,
     /// A division, `/`
     Divide,
+    /// A fraction, `\frac`
+    Frac,
     /// End of file
     EOF,
 }
@@ -101,6 +103,7 @@ impl<'s> Lexer<'s> {
         let kind = match command_name {
             "wedge" => TokenKind::Wedge,
             "cdot" => TokenKind::Dot,
+            "frac" => TokenKind::Frac,
             _ => panic!("not supported latex command: {}", command_name),
         };
         Token::new(kind, start, self.s.cursor() - 1, None)

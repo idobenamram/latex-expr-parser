@@ -2,7 +2,7 @@
 /// based on matklad's pratt parser blog https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
 use crate::{
     lexer::{Lexer, Token, TokenKind},
-    token_set::{OPERATORS, PREFIX_OPERATORS},
+    token_set::{OPERATORS, PREFIX_OPERATORS, UNIARY_OPERATORS},
 };
 
 #[cfg(feature = "serde")]
@@ -119,13 +119,16 @@ impl<'s> Parser<'s> {
                 assert_eq!(next_token.kind, TokenKind::RightParen);
                 lhs
             }
-            t if PREFIX_OPERATORS.contains(t.kind) => {
+            t if PREFIX_UNIARY_OPERATORS.contains(t.kind) => {
                 let ((), r_bp) = prefix_binding_power(&t);
                 let rhs = self.parse_expr(r_bp);
                 ASTNode::UnaryOpNode {
                     op: t,
                     operand: Box::new(rhs),
                 }
+            }
+            t if PREFIX_BINARY_OPERATORS.contains(t.kind) => {
+                todo!()
             }
             t => panic!("bad token: {:?}", t),
         };

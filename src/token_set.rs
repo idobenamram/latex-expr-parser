@@ -41,7 +41,11 @@ pub(crate) const INFIX_OPERATORS: TokenKindSet = TokenKindSet::new(&[
     TokenKind::Divide,
 ]);
 
-pub(crate) const PREFIX_OPERATORS: TokenKindSet = TokenKindSet::new(&[
+pub(crate) const PREFIX_BINARY_OPERATORS: TokenKindSet = TokenKindSet::new(&[
+    TokenKind::Frac,
+]);
+
+pub(crate) const PREFIX_UNIARY_OPERATORS: TokenKindSet = TokenKindSet::new(&[
     TokenKind::Plus,
     TokenKind::Minus,
 ]);
