@@ -46,6 +46,9 @@ pub(crate) const PREFIX_BINARY_OPERATORS: TokenKindSet = TokenKindSet::new(&[Tok
 pub(crate) const PREFIX_UNIARY_OPERATORS: TokenKindSet =
     TokenKindSet::new(&[TokenKind::Plus, TokenKind::Minus]);
 
+pub(crate) const PREFIX_UNIARY_COMMANDS_OPERATORS: TokenKindSet =
+    TokenKindSet::new(&[TokenKind::Hat]);
+
 pub(crate) const PARENTHESIS: TokenKindSet =
     TokenKindSet::new(&[TokenKind::LeftParen, TokenKind::RightParen, TokenKind::LeftBrace, TokenKind::RightBrace]);
 

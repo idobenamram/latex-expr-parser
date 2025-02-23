@@ -2,7 +2,7 @@
 /// based on matklad's pratt parser blog https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
 use crate::{
     lexer::{Lexer, Token, TokenKind},
-    token_set::{OPERATORS, PREFIX_BINARY_OPERATORS, PREFIX_UNIARY_OPERATORS},
+    token_set::{OPERATORS, PREFIX_BINARY_OPERATORS, PREFIX_UNIARY_COMMANDS_OPERATORS, PREFIX_UNIARY_OPERATORS},
 };
 
 #[cfg(feature = "serde")]
@@ -94,6 +94,15 @@ impl<'s> Parser<'s> {
         self.parse_expr(0)
     }
 
+    pub fn parse_in_braces(&mut self, min_bp: u8) -> ASTNode {
+        let next_token = self.stream.next();
+        assert_eq!(next_token.kind, TokenKind::LeftBrace);
+        let expr = self.parse_expr(min_bp);
+        let next_token = self.stream.next();
+        assert_eq!(next_token.kind, TokenKind::RightBrace);
+        return expr
+    }
+
     fn parse_expr(&mut self, min_bp: u8) -> ASTNode {
         let token = self.stream.next();
         let mut lhs = match token {
@@ -122,18 +131,16 @@ impl<'s> Parser<'s> {
                     operand: Box::new(rhs),
                 }
             }
+            t if PREFIX_UNIARY_COMMANDS_OPERATORS.contains(t.kind) => {
+                let rhs = self.parse_in_braces(0);
+                ASTNode::UnaryOpNode {
+                    op: t,
+                    operand: Box::new(rhs),
+                }
+            }
             t if PREFIX_BINARY_OPERATORS.contains(t.kind) => {
-                // get the braces
-                let next_token = self.stream.next();
-                assert_eq!(next_token.kind, TokenKind::LeftBrace);
-                let lhs = self.parse_expr(0);
-                let next_token = self.stream.next();
-                assert_eq!(next_token.kind, TokenKind::RightBrace);
-                let next_token = self.stream.next();
-                assert_eq!(next_token.kind, TokenKind::LeftBrace);
-                let rhs = self.parse_expr(0);
-                let next_token = self.stream.next();
-                assert_eq!(next_token.kind, TokenKind::RightBrace);
+                let lhs = self.parse_in_braces(0);
+                let rhs = self.parse_in_braces(0);
                 ASTNode::BinaryOpNode {
                     op: t,
                     left: Box::new(lhs),

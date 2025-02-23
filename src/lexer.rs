@@ -39,6 +39,8 @@ pub(crate) enum TokenKind {
     Divide,
     /// A fraction, `\frac`
     Frac,
+    /// the hat operator `\hat`
+    Hat,
     /// End of file
     EOF,
 }
