@@ -1,0 +1,48 @@
+---
+source: src/parser.rs
+expression: ast
+---
+BinaryOpNode {
+    op: Token {
+        kind: Frac,
+        start: 0,
+        end: 4,
+        subscript: None,
+    },
+    left: BinaryOpNode {
+        op: Token {
+            kind: Plus,
+            start: 10,
+            end: 10,
+            subscript: None,
+        },
+        left: Identifier {
+            name: "a",
+            subscript: Some(
+                "1",
+            ),
+        },
+        right: Identifier {
+            name: "b",
+            subscript: None,
+        },
+    },
+    right: BinaryOpNode {
+        op: Token {
+            kind: Wedge,
+            start: 21,
+            end: 26,
+            subscript: None,
+        },
+        left: Identifier {
+            name: "k",
+            subscript: Some(
+                "s",
+            ),
+        },
+        right: Identifier {
+            name: "H",
+            subscript: None,
+        },
+    },
+}

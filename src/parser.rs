@@ -2,7 +2,7 @@
 /// based on matklad's pratt parser blog https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
 use crate::{
     lexer::{Lexer, Token, TokenKind},
-    token_set::{OPERATORS, PREFIX_OPERATORS, UNIARY_OPERATORS},
+    token_set::{OPERATORS, PREFIX_BINARY_OPERATORS, PREFIX_UNIARY_OPERATORS},
 };
 
 #[cfg(feature = "serde")]
@@ -50,16 +50,11 @@ impl TokenStream {
     }
 
     fn next(&mut self) -> Token {
-        self.tokens
-            .pop()
-            .unwrap_or(Token::end(0))
+        self.tokens.pop().unwrap_or(Token::end(0))
     }
 
     fn peek(&self) -> Token {
-        self.tokens
-            .last()
-            .cloned()
-            .unwrap_or(Token::end(0))
+        self.tokens.last().cloned().unwrap_or(Token::end(0))
     }
 }
 
@@ -128,7 +123,22 @@ impl<'s> Parser<'s> {
                 }
             }
             t if PREFIX_BINARY_OPERATORS.contains(t.kind) => {
-                todo!()
+                // get the braces
+                let next_token = self.stream.next();
+                assert_eq!(next_token.kind, TokenKind::LeftBrace);
+                let lhs = self.parse_expr(0);
+                let next_token = self.stream.next();
+                assert_eq!(next_token.kind, TokenKind::RightBrace);
+                let next_token = self.stream.next();
+                assert_eq!(next_token.kind, TokenKind::LeftBrace);
+                let rhs = self.parse_expr(0);
+                let next_token = self.stream.next();
+                assert_eq!(next_token.kind, TokenKind::RightBrace);
+                ASTNode::BinaryOpNode {
+                    op: t,
+                    left: Box::new(lhs),
+                    right: Box::new(rhs),
+                }
             }
             t => panic!("bad token: {:?}", t),
         };
@@ -188,6 +198,7 @@ mod tests {
     #[case("input1", "a + b + c")]
     #[case("input2", "(a + b) + c")]
     #[case("input3", "-b * (-ca + a \\cdot c) + a \\wedge b")]
+    #[case("input4", "\\frac{a_1 + b}{k_{s} \\wedge H}")]
     fn test_parser(#[case] name: &str, #[case] input: &str) {
         let mut parser = Parser::new(input);
         let ast = parser.parse();

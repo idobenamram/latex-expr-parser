@@ -41,20 +41,12 @@ pub(crate) const INFIX_OPERATORS: TokenKindSet = TokenKindSet::new(&[
     TokenKind::Divide,
 ]);
 
-pub(crate) const PREFIX_BINARY_OPERATORS: TokenKindSet = TokenKindSet::new(&[
-    TokenKind::Frac,
-]);
+pub(crate) const PREFIX_BINARY_OPERATORS: TokenKindSet = TokenKindSet::new(&[TokenKind::Frac]);
 
-pub(crate) const PREFIX_UNIARY_OPERATORS: TokenKindSet = TokenKindSet::new(&[
-    TokenKind::Plus,
-    TokenKind::Minus,
-]);
+pub(crate) const PREFIX_UNIARY_OPERATORS: TokenKindSet =
+    TokenKindSet::new(&[TokenKind::Plus, TokenKind::Minus]);
 
-pub(crate) const PARENTHESIS: TokenKindSet = TokenKindSet::new(&[
-    TokenKind::LeftParen,
-    TokenKind::RightParen,
-]);
+pub(crate) const PARENTHESIS: TokenKindSet =
+    TokenKindSet::new(&[TokenKind::LeftParen, TokenKind::RightParen, TokenKind::LeftBrace, TokenKind::RightBrace]);
 
-pub(crate) const OPERATORS: TokenKindSet = INFIX_OPERATORS
-    .union(PREFIX_OPERATORS)
-    .union(PARENTHESIS);
+pub(crate) const OPERATORS: TokenKindSet = INFIX_OPERATORS.union(PARENTHESIS);
