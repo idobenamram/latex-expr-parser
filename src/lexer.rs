@@ -106,6 +106,7 @@ impl<'s> Lexer<'s> {
             "wedge" => TokenKind::Wedge,
             "cdot" => TokenKind::Dot,
             "frac" => TokenKind::Frac,
+            "hat" => TokenKind::Hat,
             _ => panic!("not supported latex command: {}", command_name),
         };
         Token::new(kind, start, self.s.cursor() - 1, None)

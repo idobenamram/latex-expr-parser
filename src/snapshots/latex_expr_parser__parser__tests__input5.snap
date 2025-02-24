@@ -1,0 +1,16 @@
+---
+source: src/parser.rs
+expression: ast
+---
+UnaryOpNode {
+    op: Token {
+        kind: Hat,
+        start: 0,
+        end: 3,
+        subscript: None,
+    },
+    operand: Identifier {
+        name: "a",
+        subscript: None,
+    },
+}

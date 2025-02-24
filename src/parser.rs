@@ -206,6 +206,7 @@ mod tests {
     #[case("input2", "(a + b) + c")]
     #[case("input3", "-b * (-ca + a \\cdot c) + a \\wedge b")]
     #[case("input4", "\\frac{a_1 + b}{k_{s} \\wedge H}")]
+    #[case("input5", "\\hat{a}")]
     fn test_parser(#[case] name: &str, #[case] input: &str) {
         let mut parser = Parser::new(input);
         let ast = parser.parse();
