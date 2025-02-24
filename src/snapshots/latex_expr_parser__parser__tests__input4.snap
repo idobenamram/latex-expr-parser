@@ -7,24 +7,28 @@ BinaryOpNode {
         kind: Frac,
         start: 0,
         end: 4,
-        subscript: None,
     },
     left: BinaryOpNode {
         op: Token {
             kind: Plus,
             start: 10,
             end: 10,
-            subscript: None,
         },
-        left: Identifier {
-            name: "a",
-            subscript: Some(
-                "1",
-            ),
+        left: BinaryOpNode {
+            op: Token {
+                kind: Underscore,
+                start: 7,
+                end: 7,
+            },
+            left: Identifier {
+                name: "a",
+            },
+            right: Identifier {
+                name: "1",
+            },
         },
         right: Identifier {
             name: "b",
-            subscript: None,
         },
     },
     right: BinaryOpNode {
@@ -32,17 +36,22 @@ BinaryOpNode {
             kind: Wedge,
             start: 21,
             end: 26,
-            subscript: None,
         },
-        left: Identifier {
-            name: "k",
-            subscript: Some(
-                "s",
-            ),
+        left: BinaryOpNode {
+            op: Token {
+                kind: Underscore,
+                start: 16,
+                end: 16,
+            },
+            left: Identifier {
+                name: "k",
+            },
+            right: Identifier {
+                name: "s",
+            },
         },
         right: Identifier {
             name: "H",
-            subscript: None,
         },
     },
 }

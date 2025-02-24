@@ -7,17 +7,15 @@ expression: tokens
         kind: Identifier,
         start: 0,
         end: 0,
-        subscript: Some(
-            TokenSubscript {
-                start: 2,
-                end: 2,
-            },
-        ),
+    },
+    Token {
+        kind: Underscore,
+        start: 1,
+        end: 1,
     },
     Token {
         kind: Identifier,
-        start: 3,
+        start: 2,
         end: 3,
-        subscript: None,
     },
 ]

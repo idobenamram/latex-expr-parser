@@ -41,8 +41,24 @@ pub(crate) enum TokenKind {
     Frac,
     /// the hat operator `\hat`
     Hat,
+    /// a underscore, `_` - used for subscript
+    Underscore,
+    /// a carrot `^` - used for superscript
+    Carrot,
+    /// an integer
+    Int,
+    /// a float
+    Float,
+    /// any other type of number
+    Numeric,
     /// End of file
     EOF,
+}
+
+impl TokenKind {
+    pub fn is_numeric(self) -> bool {
+        matches!(self, TokenKind::Int | TokenKind::Float | TokenKind::Numeric)
+    }
 }
 
 #[cfg_attr(feature = "serde", derive(Serialize))]
@@ -58,19 +74,17 @@ pub(crate) struct Token {
     pub(crate) kind: TokenKind,
     pub(crate) start: usize,
     pub(crate) end: usize,
-    pub(crate) subscript: Option<TokenSubscript>,
 }
 
 impl Token {
-    pub fn new(kind: TokenKind, start: usize, end: usize, subscript: Option<TokenSubscript>) -> Self {
-        Self { kind, start, end, subscript }
+    pub fn new(kind: TokenKind, start: usize, end: usize) -> Self {
+        Self { kind, start, end }
     }
     pub fn single(kind: TokenKind, pos: usize) -> Self {
         Self {
             kind,
             start: pos,
             end: pos,
-            subscript: None,
         }
     }
 
@@ -79,7 +93,6 @@ impl Token {
             kind: TokenKind::EOF,
             start: pos,
             end: pos,
-            subscript: None,
         }
     }
 }
@@ -97,7 +110,7 @@ impl<'s> Lexer<'s> {
 
     fn whitespace(&mut self, start: usize) -> Token {
         self.s.eat_whitespace();
-        Token::new(TokenKind::WhiteSpace, start, self.s.cursor() - 1, None)
+        Token::new(TokenKind::WhiteSpace, start, self.s.cursor() - 1)
     }
 
     fn latex_command(&mut self, start: usize) -> Token {
@@ -109,44 +122,45 @@ impl<'s> Lexer<'s> {
             "hat" => TokenKind::Hat,
             _ => panic!("not supported latex command: {}", command_name),
         };
-        Token::new(kind, start, self.s.cursor() - 1, None)
+        Token::new(kind, start, self.s.cursor() - 1)
     }
 
-    fn identifier(&mut self, start: usize) -> Token {
-        // eat while alphabetic characters
-        self.s.eat_while(|c: char| c.is_alphabetic());
-        let identifier_end = self.s.cursor() - 1;
+    // fn identifier(&mut self, start: usize) -> Token {
+    //     // eat while alphabetic characters
+    //     self.s.eat_while(|c: char| c.is_alphabetic());
+    //     let identifier_end = self.s.cursor() - 1;
 
-        // an identifier can have a subscript which will be followed either by a `{` or one more alphanumeric character
-        if self.s.peek() == Some('_') {
-            self.s.eat();
-            let subscript = match self.s.peek() {
-                Some('{') => {
-                    // skip the `{`
-                    let subscript_start = self.s.cursor() + 1;
-                    self.s.eat_while(|c: char| c != '}');
-                    let subscript_end = self.s.cursor() - 1;
-                    // skip the `}`
-                    self.s.eat();
-                    Some(TokenSubscript { start: subscript_start, end: subscript_end })
-                }
-                Some(c) if c.is_alphanumeric() => {
-                    let subscript_pos = self.s.cursor();
-                    self.s.eat();
-                    Some(TokenSubscript { start: subscript_pos, end: subscript_pos })
-                }
-                None => {None}
-                _ => {None}
-            };
-            Token::new(TokenKind::Identifier, start, identifier_end, subscript)
-        } else {
-            Token::new(TokenKind::Identifier, start, identifier_end, None)
-        }
-    }
+    //     // an identifier can have a subscript which will be followed either by a `{` or one more alphanumeric character
+    //     if self.s.peek() == Some('_') {
+    //         self.s.eat();
+    //         let subscript = match self.s.peek() {
+    //             Some('{') => {
+    //                 // skip the `{`
+    //                 let subscript_start = self.s.cursor() + 1;
+    //                 self.s.eat_while(|c: char| c != '}');
+    //                 let subscript_end = self.s.cursor() - 1;
+    //                 // skip the `}`
+    //                 self.s.eat();
+    //                 Some(TokenSubscript { start: subscript_start, end: subscript_end })
+    //             }
+    //             Some(c) if c.is_alphanumeric() => {
+    //                 let subscript_pos = self.s.cursor();
+    //                 self.s.eat();
+    //                 Some(TokenSubscript { start: subscript_pos, end: subscript_pos })
+    //             }
+    //             None => {None}
+    //             _ => {None}
+    //         };
+    //         Token::new(TokenKind::Identifier, start, identifier_end, subscript)
+    //     } else {
+    //         Token::new(TokenKind::Identifier, start, identifier_end, None)
+    //     }
+    // }
 
     fn latex(&mut self, c: char, start: usize) -> Token {
         match c {
             '\\' => self.latex_command(start),
+            '0'..='9' => self.number(start, c),
             '+' => Token::single(TokenKind::Plus, start),
             '-' => Token::single(TokenKind::Minus, start),
             '*' => Token::single(TokenKind::Multiply, start),
@@ -157,10 +171,21 @@ impl<'s> Lexer<'s> {
             ']' => Token::single(TokenKind::RightBracket, start),
             '(' => Token::single(TokenKind::LeftParen, start),
             ')' => Token::single(TokenKind::RightParen, start),
-            c if c.is_alphabetic() => self.identifier(start),
+            '_' => Token::single(TokenKind::Underscore, start),
+            '^' => Token::single(TokenKind::Carrot, start),
+            c if c.is_alphabetic() => {
+                self.s.eat_while(|c: char| c.is_alphabetic());
+                Token::new(TokenKind::Identifier, start, self.s.cursor() - 1)
+            }
 
             c => panic!("don't support unicode characters yet: {}", c),
         }
+    }
+
+    fn number(&mut self, start: usize, _c: char) -> Token {
+        // TODO: support more stuff like in typst number function
+        self.s.eat_while(|c: char| c.is_digit(10));
+        Token::new(TokenKind::Int, start, self.s.cursor() - 1)
     }
 
     pub fn next(&mut self) -> Token {
@@ -187,6 +212,7 @@ mod tests {
     #[case("input6", "a \\wedge b \\wedge c \\wedge d")]
     #[case("input7", "a_{123} + b_s")]
     #[case("input8", "a_sb")]
+    #[case("input9", "123")]
     fn test_lexer(#[case] name: &str, #[case] input: &str) {
         let mut lexer = Lexer::new(input);
         let mut tokens = vec![];

@@ -49,7 +49,15 @@ pub(crate) const PREFIX_UNIARY_OPERATORS: TokenKindSet =
 pub(crate) const PREFIX_UNIARY_COMMANDS_OPERATORS: TokenKindSet =
     TokenKindSet::new(&[TokenKind::Hat]);
 
-pub(crate) const PARENTHESIS: TokenKindSet =
-    TokenKindSet::new(&[TokenKind::LeftParen, TokenKind::RightParen, TokenKind::LeftBrace, TokenKind::RightBrace]);
+pub(crate) const PARENTHESIS: TokenKindSet = TokenKindSet::new(&[
+    TokenKind::LeftParen,
+    TokenKind::RightParen,
+    TokenKind::LeftBrace,
+    TokenKind::RightBrace,
+]);
 
-pub(crate) const OPERATORS: TokenKindSet = INFIX_OPERATORS.union(PARENTHESIS);
+pub(crate) const SUB_SUP_OPERATORS: TokenKindSet =
+    TokenKindSet::new(&[TokenKind::Underscore, TokenKind::Carrot]);
+
+pub(crate) const OPERATORS: TokenKindSet =
+    INFIX_OPERATORS.union(PARENTHESIS).union(SUB_SUP_OPERATORS);

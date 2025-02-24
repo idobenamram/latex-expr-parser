@@ -7,25 +7,21 @@ BinaryOpNode {
         kind: Plus,
         start: 23,
         end: 23,
-        subscript: None,
     },
     left: BinaryOpNode {
         op: Token {
             kind: Multiply,
             start: 3,
             end: 3,
-            subscript: None,
         },
         left: UnaryOpNode {
             op: Token {
                 kind: Minus,
                 start: 0,
                 end: 0,
-                subscript: None,
             },
             operand: Identifier {
                 name: "b",
-                subscript: None,
             },
         },
         right: BinaryOpNode {
@@ -33,18 +29,15 @@ BinaryOpNode {
                 kind: Plus,
                 start: 10,
                 end: 10,
-                subscript: None,
             },
             left: UnaryOpNode {
                 op: Token {
                     kind: Minus,
                     start: 6,
                     end: 6,
-                    subscript: None,
                 },
                 operand: Identifier {
                     name: "ca",
-                    subscript: None,
                 },
             },
             right: BinaryOpNode {
@@ -52,15 +45,12 @@ BinaryOpNode {
                     kind: Dot,
                     start: 14,
                     end: 18,
-                    subscript: None,
                 },
                 left: Identifier {
                     name: "a",
-                    subscript: None,
                 },
                 right: Identifier {
                     name: "c",
-                    subscript: None,
                 },
             },
         },
@@ -70,15 +60,12 @@ BinaryOpNode {
             kind: Wedge,
             start: 27,
             end: 32,
-            subscript: None,
         },
         left: Identifier {
             name: "a",
-            subscript: None,
         },
         right: Identifier {
             name: "b",
-            subscript: None,
         },
     },
 }

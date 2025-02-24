@@ -7,30 +7,25 @@ expression: tokens
         kind: Identifier,
         start: 0,
         end: 0,
-        subscript: None,
     },
     Token {
         kind: WhiteSpace,
         start: 1,
         end: 1,
-        subscript: None,
     },
     Token {
         kind: Wedge,
         start: 2,
         end: 7,
-        subscript: None,
     },
     Token {
         kind: WhiteSpace,
         start: 8,
         end: 8,
-        subscript: None,
     },
     Token {
         kind: Identifier,
         start: 9,
         end: 9,
-        subscript: None,
     },
 ]

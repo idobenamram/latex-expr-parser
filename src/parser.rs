@@ -2,7 +2,10 @@
 /// based on matklad's pratt parser blog https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
 use crate::{
     lexer::{Lexer, Token, TokenKind},
-    token_set::{OPERATORS, PREFIX_BINARY_OPERATORS, PREFIX_UNIARY_COMMANDS_OPERATORS, PREFIX_UNIARY_OPERATORS},
+    token_set::{
+        OPERATORS, PREFIX_BINARY_OPERATORS, PREFIX_UNIARY_COMMANDS_OPERATORS,
+        PREFIX_UNIARY_OPERATORS, SUB_SUP_OPERATORS,
+    },
 };
 
 #[cfg(feature = "serde")]
@@ -13,7 +16,6 @@ use serde::Serialize;
 pub enum ASTNode {
     Identifier {
         name: String,
-        subscript: Option<String>,
     },
     BinaryOpNode {
         op: Token,
@@ -24,6 +26,16 @@ pub enum ASTNode {
         op: Token,
         operand: Box<ASTNode>,
     },
+}
+
+impl ASTNode {
+    fn binary(op: Token, lhs: ASTNode, rhs: ASTNode) -> ASTNode {
+        ASTNode::BinaryOpNode {
+            op,
+            left: Box::new(lhs),
+            right: Box::new(rhs),
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -100,22 +112,27 @@ impl<'s> Parser<'s> {
         let expr = self.parse_expr(min_bp);
         let next_token = self.stream.next();
         assert_eq!(next_token.kind, TokenKind::RightBrace);
-        return expr
+        return expr;
+    }
+
+    pub fn parse_sub_sup(&mut self) -> ASTNode {
+        match self.stream.peek() {
+            t if t.kind == TokenKind::LeftBrace => self.parse_in_braces(0),
+            t if t.kind.is_numeric() => {
+                self.stream.next();
+                let name = self.input[t.start..=t.end].to_string();
+                ASTNode::Identifier { name }
+            }
+            t => panic!("bad token: {:?}", t),
+        }
     }
 
     fn parse_expr(&mut self, min_bp: u8) -> ASTNode {
         let token = self.stream.next();
         let mut lhs = match token {
-            t if t.kind == TokenKind::Identifier => {
+            t if (t.kind == TokenKind::Identifier || t.kind == TokenKind::Int) => {
                 let name = self.input[t.start..=t.end].to_string();
-
-                let subscript = if let Some(subscript) = t.subscript {
-                    let subscript_str = self.input[subscript.start..=subscript.end].to_string();
-                    Some(subscript_str)
-                } else {
-                    None
-                };
-                ASTNode::Identifier { name, subscript }
+                ASTNode::Identifier { name }
             }
             tok if tok.kind == TokenKind::LeftParen => {
                 let lhs = self.parse_expr(0);
@@ -141,11 +158,7 @@ impl<'s> Parser<'s> {
             t if PREFIX_BINARY_OPERATORS.contains(t.kind) => {
                 let lhs = self.parse_in_braces(0);
                 let rhs = self.parse_in_braces(0);
-                ASTNode::BinaryOpNode {
-                    op: t,
-                    left: Box::new(lhs),
-                    right: Box::new(rhs),
-                }
+                ASTNode::binary(t, lhs, rhs)
             }
             t => panic!("bad token: {:?}", t),
         };
@@ -173,6 +186,16 @@ impl<'s> Parser<'s> {
             //     continue;
             // }
 
+            match SUB_SUP_OPERATORS.contains(op.kind) {
+                true => {
+                    self.stream.next();
+                    let rhs = self.parse_sub_sup();
+                    lhs = ASTNode::binary(op, lhs, rhs);
+                    continue;
+                }
+                false => {}
+            }
+
             if let Some((l_bp, r_bp)) = infix_binding_power(&op) {
                 if l_bp < min_bp {
                     break;
@@ -180,11 +203,7 @@ impl<'s> Parser<'s> {
                 self.stream.next();
 
                 let rhs = self.parse_expr(r_bp);
-                lhs = ASTNode::BinaryOpNode {
-                    op,
-                    left: Box::new(lhs),
-                    right: Box::new(rhs),
-                };
+                lhs = ASTNode::binary(op, lhs, rhs);
                 continue;
             }
 
@@ -207,6 +226,7 @@ mod tests {
     #[case("input3", "-b * (-ca + a \\cdot c) + a \\wedge b")]
     #[case("input4", "\\frac{a_1 + b}{k_{s} \\wedge H}")]
     #[case("input5", "\\hat{a}")]
+    #[case("input6", "a_1^2")]
     fn test_parser(#[case] name: &str, #[case] input: &str) {
         let mut parser = Parser::new(input);
         let ast = parser.parse();

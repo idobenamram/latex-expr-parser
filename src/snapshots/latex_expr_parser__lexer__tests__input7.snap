@@ -7,40 +7,55 @@ expression: tokens
         kind: Identifier,
         start: 0,
         end: 0,
-        subscript: Some(
-            TokenSubscript {
-                start: 3,
-                end: 5,
-            },
-        ),
+    },
+    Token {
+        kind: Underscore,
+        start: 1,
+        end: 1,
+    },
+    Token {
+        kind: LeftBrace,
+        start: 2,
+        end: 2,
+    },
+    Token {
+        kind: Int,
+        start: 3,
+        end: 5,
+    },
+    Token {
+        kind: RightBrace,
+        start: 6,
+        end: 6,
     },
     Token {
         kind: WhiteSpace,
         start: 7,
         end: 7,
-        subscript: None,
     },
     Token {
         kind: Plus,
         start: 8,
         end: 8,
-        subscript: None,
     },
     Token {
         kind: WhiteSpace,
         start: 9,
         end: 9,
-        subscript: None,
     },
     Token {
         kind: Identifier,
         start: 10,
         end: 10,
-        subscript: Some(
-            TokenSubscript {
-                start: 12,
-                end: 12,
-            },
-        ),
+    },
+    Token {
+        kind: Underscore,
+        start: 11,
+        end: 11,
+    },
+    Token {
+        kind: Identifier,
+        start: 12,
+        end: 12,
     },
 ]

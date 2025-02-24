@@ -4,24 +4,24 @@ expression: ast
 ---
 BinaryOpNode {
     op: Token {
-        kind: Plus,
-        start: 6,
-        end: 6,
+        kind: Carrot,
+        start: 3,
+        end: 3,
     },
     left: BinaryOpNode {
         op: Token {
-            kind: Plus,
-            start: 2,
-            end: 2,
+            kind: Underscore,
+            start: 1,
+            end: 1,
         },
         left: Identifier {
             name: "a",
         },
         right: Identifier {
-            name: "b",
+            name: "1",
         },
     },
     right: Identifier {
-        name: "c",
+        name: "2",
     },
 }
