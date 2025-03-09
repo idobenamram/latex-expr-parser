@@ -8,3 +8,10 @@ doesn't handle all use cases in latex
 - https://github.com/typst/typst
 - https://github.com/matklad/minipratt/tree/master
 - https://github.com/rust-lang/rust-analyzer (the parser section)
+
+
+## create pkg
+```bash
+cargo install wasm-pack
+wasm-pack build --target web
+```
