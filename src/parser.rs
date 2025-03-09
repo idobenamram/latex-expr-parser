@@ -81,10 +81,13 @@ fn postfix_binding_power(op: &Token) -> Option<(u8, ())> {
     todo!()
 }
 
-fn infix_binding_power(op: &Token) -> Option<(u8, u8)> {
-    match op.kind {
+fn infix_binding_power(op: &TokenKind) -> Option<(u8, u8)> {
+    match op {
         TokenKind::Plus | TokenKind::Minus => Some((3, 4)),
-        TokenKind::Multiply | TokenKind::Divide | TokenKind::Wedge | TokenKind::Dot => Some((5, 6)),
+        TokenKind::Multiply | TokenKind::Divide  => Some((5, 6)),
+        TokenKind::Wedge | TokenKind::Dot => Some((6, 7)),
+        // exponentiation
+        TokenKind::Carrot | TokenKind::Underscore => Some((7, 8)),
         _ => None,
     }
 }
@@ -130,7 +133,7 @@ impl<'s> Parser<'s> {
     fn parse_expr(&mut self, min_bp: u8) -> ASTNode {
         let token = self.stream.next();
         let mut lhs = match token {
-            t if (t.kind == TokenKind::Identifier || t.kind == TokenKind::Int) => {
+            t if t.kind.ident_or_numeric() => {
                 let name = self.input[t.start..=t.end].to_string();
                 ASTNode::Identifier { name }
             }
@@ -167,36 +170,36 @@ impl<'s> Parser<'s> {
             let op = match self.stream.peek() {
                 t if t.kind == TokenKind::EOF => break,
                 t if OPERATORS.contains(t.kind) => t,
+                // t if t.kind.ident_or_numeric() => t,
                 t => panic!("bad token: {:?}", t),
             };
 
-            // if let Some((l_bp, ())) = postfix_binding_power(op) {
-            //     if l_bp < min_bp {
-            //         break;
-            //     }
-            //     lexer.next();
-
-            //     lhs = if op == '[' {
-            //         let rhs = expr_bp(lexer, 0);
-            //         assert_eq!(lexer.next(), Token::Op(']'));
-            //         S::Cons(op, vec![lhs, rhs])
-            //     } else {
-            //         S::Cons(op, vec![lhs])
-            //     };
+            // if op.kind.ident_or_numeric() {
+            //     let name = self.input[op.start..=op.end].to_string();
+            //     let rhs = ASTNode::Identifier { name };
+            //     lhs = ASTNode::binary(Token::new(TokenKind::Multiply, op.start, op.end), lhs, rhs);
             //     continue;
             // }
 
-            match SUB_SUP_OPERATORS.contains(op.kind) {
-                true => {
+            if SUB_SUP_OPERATORS.contains(op.kind) {
                     self.stream.next();
                     let rhs = self.parse_sub_sup();
                     lhs = ASTNode::binary(op, lhs, rhs);
                     continue;
-                }
-                false => {}
             }
 
-            if let Some((l_bp, r_bp)) = infix_binding_power(&op) {
+            if op.kind == TokenKind::LeftParen {
+                let (l_bp, r_bp) = infix_binding_power(&TokenKind::Multiply).unwrap();
+                if l_bp < min_bp {
+                    break;
+                }
+
+                let rhs = self.parse_expr(r_bp);
+                lhs = ASTNode::binary(Token::new(TokenKind::Multiply, op.start, op.end), lhs, rhs);
+                continue;
+            }
+
+            if let Some((l_bp, r_bp)) = infix_binding_power(&op.kind) {
                 if l_bp < min_bp {
                     break;
                 }
@@ -227,6 +230,12 @@ mod tests {
     #[case("input4", "\\frac{a_1 + b}{k_{s} \\wedge H}")]
     #[case("input5", "\\hat{a}")]
     #[case("input6", "a_1^2")]
+    #[case("input7", "c + 2(a+b)")]
+    // #[case("input8", "c \\wedge 2(a+b)")] // TODO: doesn't really work.
+    #[case("input9", "2(a \\wedge b)^3")]
+    #[case("input10", "-ia \\wedge b")]
+    // #[case("input7", "2a + a2")]
+    // #[case("input7", "(1 + 2)(a + b)")]
     fn test_parser(#[case] name: &str, #[case] input: &str) {
         let mut parser = Parser::new(input);
         let ast = parser.parse();

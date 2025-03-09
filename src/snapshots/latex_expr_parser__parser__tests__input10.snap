@@ -1,0 +1,24 @@
+---
+source: src/parser.rs
+expression: ast
+---
+BinaryOpNode {
+    op: Token {
+        kind: Wedge,
+        start: 4,
+        end: 9,
+    },
+    left: UnaryOpNode {
+        op: Token {
+            kind: Minus,
+            start: 0,
+            end: 0,
+        },
+        operand: Identifier {
+            name: "ia",
+        },
+    },
+    right: Identifier {
+        name: "b",
+    },
+}

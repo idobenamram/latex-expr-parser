@@ -59,13 +59,10 @@ impl TokenKind {
     pub fn is_numeric(self) -> bool {
         matches!(self, TokenKind::Int | TokenKind::Float | TokenKind::Numeric)
     }
-}
 
-#[cfg_attr(feature = "serde", derive(Serialize))]
-#[derive(Debug, Clone)]
-pub(crate) struct TokenSubscript {
-    pub(crate) start: usize,
-    pub(crate) end: usize,
+    pub fn ident_or_numeric(self) -> bool {
+        matches!(self, TokenKind::Identifier | TokenKind::Int | TokenKind::Float | TokenKind::Numeric)
+    }
 }
 
 #[cfg_attr(feature = "serde", derive(Serialize))]
