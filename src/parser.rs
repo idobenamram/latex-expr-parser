@@ -170,17 +170,11 @@ impl<'s> Parser<'s> {
             let op = match self.stream.peek() {
                 t if t.kind == TokenKind::EOF => break,
                 t if OPERATORS.contains(t.kind) => t,
-                // t if t.kind.ident_or_numeric() => t,
+                t if t.kind.ident_or_numeric() => t,
                 t => panic!("bad token: {:?}", t),
             };
 
-            // if op.kind.ident_or_numeric() {
-            //     let name = self.input[op.start..=op.end].to_string();
-            //     let rhs = ASTNode::Identifier { name };
-            //     lhs = ASTNode::binary(Token::new(TokenKind::Multiply, op.start, op.end), lhs, rhs);
-            //     continue;
-            // }
-
+            // TODO: should probably be handled with binding power
             if SUB_SUP_OPERATORS.contains(op.kind) {
                     self.stream.next();
                     let rhs = self.parse_sub_sup();
@@ -188,8 +182,9 @@ impl<'s> Parser<'s> {
                     continue;
             }
 
-            if op.kind == TokenKind::LeftParen {
-                let (l_bp, r_bp) = infix_binding_power(&TokenKind::Multiply).unwrap();
+            // in the case of no operator, we should assume multiplication 
+            if op.kind == TokenKind::LeftParen || op.kind.ident_or_numeric() { 
+                let (l_bp, r_bp) = infix_binding_power(&TokenKind::Multiply).expect("multiplication is an infix operator");
                 if l_bp < min_bp {
                     break;
                 }
@@ -234,8 +229,8 @@ mod tests {
     // #[case("input8", "c \\wedge 2(a+b)")] // TODO: doesn't really work.
     #[case("input9", "2(a \\wedge b)^3")]
     #[case("input10", "-ia \\wedge b")]
-    // #[case("input7", "2a + a2")]
-    // #[case("input7", "(1 + 2)(a + b)")]
+    #[case("input11", "(1 + 2)(a + b)")]
+    #[case("input12", "2a + a2")]
     fn test_parser(#[case] name: &str, #[case] input: &str) {
         let mut parser = Parser::new(input);
         let ast = parser.parse();
