@@ -13,5 +13,5 @@ doesn't handle all use cases in latex
 ## create pkg
 ```bash
 cargo install wasm-pack
-wasm-pack build --target web
+wasm-pack build --target bundler --features wasm
 ```
