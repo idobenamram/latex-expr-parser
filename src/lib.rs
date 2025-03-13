@@ -4,6 +4,7 @@ pub(crate) mod token_set;
 
 // Re-export commonly used items
 pub use parser::{Parser, ASTNode};
+pub use lexer::TokenKind;
 
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;

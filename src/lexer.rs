@@ -3,12 +3,12 @@
 use unscanny::Scanner;
 
 #[cfg(feature = "serde")]
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
-#[cfg_attr(feature = "serde", derive(Serialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
-pub(crate) enum TokenKind {
+pub enum TokenKind {
     /// an identifier, like `A` or `B`
     Identifier,
     /// A left curly brace, `{`
@@ -60,8 +60,12 @@ impl TokenKind {
         matches!(self, TokenKind::Int | TokenKind::Float | TokenKind::Numeric)
     }
 
+    pub fn is_identifier(self) -> bool {
+        matches!(self, TokenKind::Identifier)
+    }
+
     pub fn ident_or_numeric(self) -> bool {
-        matches!(self, TokenKind::Identifier | TokenKind::Int | TokenKind::Float | TokenKind::Numeric)
+        self.is_identifier() || self.is_numeric()
     }
 }
 

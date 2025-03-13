@@ -9,27 +9,30 @@ use crate::{
 };
 
 #[cfg(feature = "serde")]
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
-#[cfg_attr(feature = "serde", derive(Serialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug)]
 pub enum ASTNode {
     Identifier {
         name: String,
     },
+    Int {
+        value: i64,
+    },
     BinaryOpNode {
-        op: Token,
+        op: TokenKind,
         left: Box<ASTNode>,
         right: Box<ASTNode>,
     },
     UnaryOpNode {
-        op: Token,
+        op: TokenKind,
         operand: Box<ASTNode>,
     },
 }
 
 impl ASTNode {
-    fn binary(op: Token, lhs: ASTNode, rhs: ASTNode) -> ASTNode {
+    fn binary(op: TokenKind, lhs: ASTNode, rhs: ASTNode) -> ASTNode {
         ASTNode::BinaryOpNode {
             op,
             left: Box::new(lhs),
@@ -84,7 +87,7 @@ fn postfix_binding_power(op: &Token) -> Option<(u8, ())> {
 fn infix_binding_power(op: &TokenKind) -> Option<(u8, u8)> {
     match op {
         TokenKind::Plus | TokenKind::Minus => Some((3, 4)),
-        TokenKind::Multiply | TokenKind::Divide  => Some((5, 6)),
+        TokenKind::Multiply | TokenKind::Divide => Some((5, 6)),
         TokenKind::Wedge | TokenKind::Dot => Some((6, 7)),
         // exponentiation
         TokenKind::Carrot | TokenKind::Underscore => Some((7, 8)),
@@ -133,9 +136,16 @@ impl<'s> Parser<'s> {
     fn parse_expr(&mut self, min_bp: u8) -> ASTNode {
         let token = self.stream.next();
         let mut lhs = match token {
-            t if t.kind.ident_or_numeric() => {
+            t if t.kind.is_identifier() => {
                 let name = self.input[t.start..=t.end].to_string();
                 ASTNode::Identifier { name }
+            }
+            t if t.kind.is_numeric() => {
+                // TODO: handle floats and numeric
+                let value = self.input[t.start..=t.end]
+                    .parse::<i64>()
+                    .expect("should be a valid int");
+                ASTNode::Int { value }
             }
             tok if tok.kind == TokenKind::LeftParen => {
                 let lhs = self.parse_expr(0);
@@ -147,21 +157,21 @@ impl<'s> Parser<'s> {
                 let ((), r_bp) = prefix_binding_power(&t);
                 let rhs = self.parse_expr(r_bp);
                 ASTNode::UnaryOpNode {
-                    op: t,
+                    op: t.kind,
                     operand: Box::new(rhs),
                 }
             }
             t if PREFIX_UNIARY_COMMANDS_OPERATORS.contains(t.kind) => {
                 let rhs = self.parse_in_braces(0);
                 ASTNode::UnaryOpNode {
-                    op: t,
+                    op: t.kind,
                     operand: Box::new(rhs),
                 }
             }
             t if PREFIX_BINARY_OPERATORS.contains(t.kind) => {
                 let lhs = self.parse_in_braces(0);
                 let rhs = self.parse_in_braces(0);
-                ASTNode::binary(t, lhs, rhs)
+                ASTNode::binary(t.kind, lhs, rhs)
             }
             t => panic!("bad token: {:?}", t),
         };
@@ -176,21 +186,22 @@ impl<'s> Parser<'s> {
 
             // TODO: should probably be handled with binding power
             if SUB_SUP_OPERATORS.contains(op.kind) {
-                    self.stream.next();
-                    let rhs = self.parse_sub_sup();
-                    lhs = ASTNode::binary(op, lhs, rhs);
-                    continue;
+                self.stream.next();
+                let rhs = self.parse_sub_sup();
+                lhs = ASTNode::binary(op.kind, lhs, rhs);
+                continue;
             }
 
-            // in the case of no operator, we should assume multiplication 
-            if op.kind == TokenKind::LeftParen || op.kind.ident_or_numeric() { 
-                let (l_bp, r_bp) = infix_binding_power(&TokenKind::Multiply).expect("multiplication is an infix operator");
+            // in the case of no operator, we should assume multiplication
+            if op.kind == TokenKind::LeftParen || op.kind.ident_or_numeric() {
+                let (l_bp, r_bp) = infix_binding_power(&TokenKind::Multiply)
+                    .expect("multiplication is an infix operator");
                 if l_bp < min_bp {
                     break;
                 }
 
                 let rhs = self.parse_expr(r_bp);
-                lhs = ASTNode::binary(Token::new(TokenKind::Multiply, op.start, op.end), lhs, rhs);
+                lhs = ASTNode::binary(TokenKind::Multiply, lhs, rhs);
                 continue;
             }
 
@@ -201,7 +212,7 @@ impl<'s> Parser<'s> {
                 self.stream.next();
 
                 let rhs = self.parse_expr(r_bp);
-                lhs = ASTNode::binary(op, lhs, rhs);
+                lhs = ASTNode::binary(op.kind, lhs, rhs);
                 continue;
             }
 
