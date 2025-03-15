@@ -3,30 +3,18 @@ source: src/parser.rs
 expression: ast
 ---
 BinaryOpNode {
-    op: Token {
-        kind: Multiply,
-        start: 7,
-        end: 7,
-    },
+    op: Multiply,
     left: BinaryOpNode {
-        op: Token {
-            kind: Plus,
-            start: 3,
-            end: 3,
+        op: Plus,
+        left: Int {
+            value: 1,
         },
-        left: Identifier {
-            name: "1",
-        },
-        right: Identifier {
-            name: "2",
+        right: Int {
+            value: 2,
         },
     },
     right: BinaryOpNode {
-        op: Token {
-            kind: Plus,
-            start: 10,
-            end: 10,
-        },
+        op: Plus,
         left: Identifier {
             name: "a",
         },

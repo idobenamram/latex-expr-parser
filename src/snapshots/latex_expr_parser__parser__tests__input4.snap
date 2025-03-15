@@ -3,23 +3,11 @@ source: src/parser.rs
 expression: ast
 ---
 BinaryOpNode {
-    op: Token {
-        kind: Frac,
-        start: 0,
-        end: 4,
-    },
+    op: Frac,
     left: BinaryOpNode {
-        op: Token {
-            kind: Plus,
-            start: 10,
-            end: 10,
-        },
+        op: Plus,
         left: BinaryOpNode {
-            op: Token {
-                kind: Underscore,
-                start: 7,
-                end: 7,
-            },
+            op: Underscore,
             left: Identifier {
                 name: "a",
             },
@@ -32,17 +20,9 @@ BinaryOpNode {
         },
     },
     right: BinaryOpNode {
-        op: Token {
-            kind: Wedge,
-            start: 21,
-            end: 26,
-        },
+        op: Wedge,
         left: BinaryOpNode {
-            op: Token {
-                kind: Underscore,
-                start: 16,
-                end: 16,
-            },
+            op: Underscore,
             left: Identifier {
                 name: "k",
             },

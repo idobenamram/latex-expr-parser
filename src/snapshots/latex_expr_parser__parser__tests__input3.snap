@@ -3,49 +3,25 @@ source: src/parser.rs
 expression: ast
 ---
 BinaryOpNode {
-    op: Token {
-        kind: Plus,
-        start: 23,
-        end: 23,
-    },
+    op: Plus,
     left: BinaryOpNode {
-        op: Token {
-            kind: Multiply,
-            start: 3,
-            end: 3,
-        },
+        op: Multiply,
         left: UnaryOpNode {
-            op: Token {
-                kind: Minus,
-                start: 0,
-                end: 0,
-            },
+            op: Minus,
             operand: Identifier {
                 name: "b",
             },
         },
         right: BinaryOpNode {
-            op: Token {
-                kind: Plus,
-                start: 10,
-                end: 10,
-            },
+            op: Plus,
             left: UnaryOpNode {
-                op: Token {
-                    kind: Minus,
-                    start: 6,
-                    end: 6,
-                },
+                op: Minus,
                 operand: Identifier {
                     name: "ca",
                 },
             },
             right: BinaryOpNode {
-                op: Token {
-                    kind: Dot,
-                    start: 14,
-                    end: 18,
-                },
+                op: Dot,
                 left: Identifier {
                     name: "a",
                 },
@@ -56,11 +32,7 @@ BinaryOpNode {
         },
     },
     right: BinaryOpNode {
-        op: Token {
-            kind: Wedge,
-            start: 27,
-            end: 32,
-        },
+        op: Wedge,
         left: Identifier {
             name: "a",
         },

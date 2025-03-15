@@ -3,11 +3,7 @@ source: src/parser.rs
 expression: ast
 ---
 UnaryOpNode {
-    op: Token {
-        kind: Hat,
-        start: 0,
-        end: 3,
-    },
+    op: Hat,
     operand: Identifier {
         name: "a",
     },

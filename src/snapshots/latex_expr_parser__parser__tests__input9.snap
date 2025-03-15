@@ -3,26 +3,14 @@ source: src/parser.rs
 expression: ast
 ---
 BinaryOpNode {
-    op: Token {
-        kind: Multiply,
-        start: 1,
-        end: 1,
-    },
-    left: Identifier {
-        name: "2",
+    op: Multiply,
+    left: Int {
+        value: 2,
     },
     right: BinaryOpNode {
-        op: Token {
-            kind: Carrot,
-            start: 13,
-            end: 13,
-        },
+        op: Carrot,
         left: BinaryOpNode {
-            op: Token {
-                kind: Wedge,
-                start: 4,
-                end: 9,
-            },
+            op: Wedge,
             left: Identifier {
                 name: "a",
             },

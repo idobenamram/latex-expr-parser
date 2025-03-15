@@ -3,17 +3,9 @@ source: src/parser.rs
 expression: ast
 ---
 BinaryOpNode {
-    op: Token {
-        kind: Carrot,
-        start: 3,
-        end: 3,
-    },
+    op: Carrot,
     left: BinaryOpNode {
-        op: Token {
-            kind: Underscore,
-            start: 1,
-            end: 1,
-        },
+        op: Underscore,
         left: Identifier {
             name: "a",
         },
