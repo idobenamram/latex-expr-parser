@@ -9,11 +9,19 @@ use crate::{
 };
 
 #[cfg(feature = "serde")]
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug)]
-pub enum ASTNode {
+pub struct ASTNode {
+    pub start: usize,
+    pub end: usize,
+    pub kind: ASTNodeType,
+}
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug)]
+pub enum ASTNodeType {
     Identifier {
         name: String,
     },
@@ -32,13 +40,71 @@ pub enum ASTNode {
 }
 
 impl ASTNode {
-    fn binary(op: TokenKind, lhs: ASTNode, rhs: ASTNode) -> ASTNode {
-        ASTNode::BinaryOpNode {
-            op,
-            left: Box::new(lhs),
-            right: Box::new(rhs),
+    fn identifier(name: String, start: usize, end: usize) -> ASTNode {
+        ASTNode {
+            start,
+            end,
+            kind: ASTNodeType::Identifier { name },
         }
     }
+
+    fn int(value: i64, start: usize, end: usize) -> ASTNode {
+        ASTNode {
+            start,
+            end,
+            kind: ASTNodeType::Int { value },
+        }
+    }
+
+    fn unary(op: Token, operand: ASTNode) -> ASTNode {
+        ASTNode {
+            start: op.start,
+            end: operand.end,
+            kind: ASTNodeType::UnaryOpNode {
+                op: op.kind,
+                operand: Box::new(operand),
+            },
+        }
+    }
+
+    fn binary(op: TokenKind, lhs: ASTNode, rhs: ASTNode) -> ASTNode {
+        ASTNode {
+            start: lhs.start,
+            end: rhs.end,
+            kind: ASTNodeType::BinaryOpNode {
+                op,
+                left: Box::new(lhs),
+                right: Box::new(rhs),
+            },
+        }
+    }
+
+    fn binary_with_position(
+        op: TokenKind,
+        start: usize,
+        end: usize,
+        lhs: ASTNode,
+        rhs: ASTNode,
+    ) -> ASTNode {
+        ASTNode {
+            start,
+            end,
+            kind: ASTNodeType::BinaryOpNode {
+                op,
+                left: Box::new(lhs),
+                right: Box::new(rhs),
+            },
+        }
+    }
+
+    fn expand(self) -> ASTNode {
+        ASTNode {
+            start: self.start - 1,
+            end: self.end + 1,
+            kind: self.kind,
+        }
+    }
+
 }
 
 #[derive(Debug)]
@@ -127,7 +193,7 @@ impl<'s> Parser<'s> {
             t if t.kind.is_numeric() => {
                 self.stream.next();
                 let name = self.input[t.start..=t.end].to_string();
-                ASTNode::Identifier { name }
+                ASTNode::identifier(name, t.start, t.end)
             }
             t => panic!("bad token: {:?}", t),
         }
@@ -138,40 +204,36 @@ impl<'s> Parser<'s> {
         let mut lhs = match token {
             t if t.kind.is_identifier() => {
                 let name = self.input[t.start..=t.end].to_string();
-                ASTNode::Identifier { name }
+                ASTNode::identifier(name, t.start, t.end)
             }
             t if t.kind.is_numeric() => {
                 // TODO: handle floats and numeric
                 let value = self.input[t.start..=t.end]
                     .parse::<i64>()
                     .expect("should be a valid int");
-                ASTNode::Int { value }
+                ASTNode::int(value, t.start, t.end)
             }
             tok if tok.kind == TokenKind::LeftParen => {
                 let lhs = self.parse_expr(0);
                 let next_token = self.stream.next();
                 assert_eq!(next_token.kind, TokenKind::RightParen);
-                lhs
+                // expand to include the parentheses
+                lhs.expand()
             }
             t if PREFIX_UNIARY_OPERATORS.contains(t.kind) => {
                 let ((), r_bp) = prefix_binding_power(&t);
                 let rhs = self.parse_expr(r_bp);
-                ASTNode::UnaryOpNode {
-                    op: t.kind,
-                    operand: Box::new(rhs),
-                }
+                ASTNode::unary(t, rhs)
             }
             t if PREFIX_UNIARY_COMMANDS_OPERATORS.contains(t.kind) => {
                 let rhs = self.parse_in_braces(0);
-                ASTNode::UnaryOpNode {
-                    op: t.kind,
-                    operand: Box::new(rhs),
-                }
+                ASTNode::unary(t, rhs)
             }
             t if PREFIX_BINARY_OPERATORS.contains(t.kind) => {
                 let lhs = self.parse_in_braces(0);
                 let rhs = self.parse_in_braces(0);
-                ASTNode::binary(t.kind, lhs, rhs)
+                // the plus one is to include the right braces
+                ASTNode::binary_with_position(t.kind, t.start, rhs.end + 1, lhs, rhs)
             }
             t => panic!("bad token: {:?}", t),
         };

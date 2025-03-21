@@ -2,24 +2,52 @@
 source: src/parser.rs
 expression: ast
 ---
-BinaryOpNode {
-    op: Multiply,
-    left: Int {
-        value: 2,
-    },
-    right: BinaryOpNode {
-        op: Carrot,
-        left: BinaryOpNode {
-            op: Wedge,
-            left: Identifier {
-                name: "a",
-            },
-            right: Identifier {
-                name: "b",
+ASTNode {
+    start: 0,
+    end: 14,
+    kind: BinaryOpNode {
+        op: Multiply,
+        left: ASTNode {
+            start: 0,
+            end: 0,
+            kind: Int {
+                value: 2,
             },
         },
-        right: Identifier {
-            name: "3",
+        right: ASTNode {
+            start: 1,
+            end: 14,
+            kind: BinaryOpNode {
+                op: Carrot,
+                left: ASTNode {
+                    start: 1,
+                    end: 12,
+                    kind: BinaryOpNode {
+                        op: Wedge,
+                        left: ASTNode {
+                            start: 2,
+                            end: 2,
+                            kind: Identifier {
+                                name: "a",
+                            },
+                        },
+                        right: ASTNode {
+                            start: 11,
+                            end: 11,
+                            kind: Identifier {
+                                name: "b",
+                            },
+                        },
+                    },
+                },
+                right: ASTNode {
+                    start: 14,
+                    end: 14,
+                    kind: Identifier {
+                        name: "3",
+                    },
+                },
+            },
         },
     },
 }

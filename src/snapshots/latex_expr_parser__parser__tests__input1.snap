@@ -2,18 +2,38 @@
 source: src/parser.rs
 expression: ast
 ---
-BinaryOpNode {
-    op: Plus,
-    left: BinaryOpNode {
+ASTNode {
+    start: 0,
+    end: 8,
+    kind: BinaryOpNode {
         op: Plus,
-        left: Identifier {
-            name: "a",
+        left: ASTNode {
+            start: 0,
+            end: 4,
+            kind: BinaryOpNode {
+                op: Plus,
+                left: ASTNode {
+                    start: 0,
+                    end: 0,
+                    kind: Identifier {
+                        name: "a",
+                    },
+                },
+                right: ASTNode {
+                    start: 4,
+                    end: 4,
+                    kind: Identifier {
+                        name: "b",
+                    },
+                },
+            },
         },
-        right: Identifier {
-            name: "b",
+        right: ASTNode {
+            start: 8,
+            end: 8,
+            kind: Identifier {
+                name: "c",
+            },
         },
-    },
-    right: Identifier {
-        name: "c",
     },
 }

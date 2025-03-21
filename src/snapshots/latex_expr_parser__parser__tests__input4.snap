@@ -2,36 +2,80 @@
 source: src/parser.rs
 expression: ast
 ---
-BinaryOpNode {
-    op: Frac,
-    left: BinaryOpNode {
-        op: Plus,
-        left: BinaryOpNode {
-            op: Underscore,
-            left: Identifier {
-                name: "a",
-            },
-            right: Identifier {
-                name: "1",
+ASTNode {
+    start: 0,
+    end: 29,
+    kind: BinaryOpNode {
+        op: Frac,
+        left: ASTNode {
+            start: 6,
+            end: 12,
+            kind: BinaryOpNode {
+                op: Plus,
+                left: ASTNode {
+                    start: 6,
+                    end: 8,
+                    kind: BinaryOpNode {
+                        op: Underscore,
+                        left: ASTNode {
+                            start: 6,
+                            end: 6,
+                            kind: Identifier {
+                                name: "a",
+                            },
+                        },
+                        right: ASTNode {
+                            start: 8,
+                            end: 8,
+                            kind: Identifier {
+                                name: "1",
+                            },
+                        },
+                    },
+                },
+                right: ASTNode {
+                    start: 12,
+                    end: 12,
+                    kind: Identifier {
+                        name: "b",
+                    },
+                },
             },
         },
-        right: Identifier {
-            name: "b",
-        },
-    },
-    right: BinaryOpNode {
-        op: Wedge,
-        left: BinaryOpNode {
-            op: Underscore,
-            left: Identifier {
-                name: "k",
+        right: ASTNode {
+            start: 15,
+            end: 28,
+            kind: BinaryOpNode {
+                op: Wedge,
+                left: ASTNode {
+                    start: 15,
+                    end: 18,
+                    kind: BinaryOpNode {
+                        op: Underscore,
+                        left: ASTNode {
+                            start: 15,
+                            end: 15,
+                            kind: Identifier {
+                                name: "k",
+                            },
+                        },
+                        right: ASTNode {
+                            start: 18,
+                            end: 18,
+                            kind: Identifier {
+                                name: "s",
+                            },
+                        },
+                    },
+                },
+                right: ASTNode {
+                    start: 28,
+                    end: 28,
+                    kind: Identifier {
+                        name: "H",
+                    },
+                },
             },
-            right: Identifier {
-                name: "s",
-            },
-        },
-        right: Identifier {
-            name: "H",
         },
     },
 }

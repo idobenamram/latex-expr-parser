@@ -2,9 +2,17 @@
 source: src/parser.rs
 expression: ast
 ---
-UnaryOpNode {
-    op: Hat,
-    operand: Identifier {
-        name: "a",
+ASTNode {
+    start: 0,
+    end: 5,
+    kind: UnaryOpNode {
+        op: Hat,
+        operand: ASTNode {
+            start: 5,
+            end: 5,
+            kind: Identifier {
+                name: "a",
+            },
+        },
     },
 }

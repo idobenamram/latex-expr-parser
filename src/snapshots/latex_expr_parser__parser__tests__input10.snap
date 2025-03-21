@@ -2,15 +2,31 @@
 source: src/parser.rs
 expression: ast
 ---
-BinaryOpNode {
-    op: Wedge,
-    left: UnaryOpNode {
-        op: Minus,
-        operand: Identifier {
-            name: "ia",
+ASTNode {
+    start: 0,
+    end: 11,
+    kind: BinaryOpNode {
+        op: Wedge,
+        left: ASTNode {
+            start: 0,
+            end: 2,
+            kind: UnaryOpNode {
+                op: Minus,
+                operand: ASTNode {
+                    start: 1,
+                    end: 2,
+                    kind: Identifier {
+                        name: "ia",
+                    },
+                },
+            },
         },
-    },
-    right: Identifier {
-        name: "b",
+        right: ASTNode {
+            start: 11,
+            end: 11,
+            kind: Identifier {
+                name: "b",
+            },
+        },
     },
 }
