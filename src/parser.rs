@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 pub struct ASTNode {
     pub start: usize,
     pub end: usize,
-    pub kind: ASTNodeType,
+    pub r#type: ASTNodeType,
 }
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -44,7 +44,7 @@ impl ASTNode {
         ASTNode {
             start,
             end,
-            kind: ASTNodeType::Identifier { name },
+            r#type: ASTNodeType::Identifier { name },
         }
     }
 
@@ -52,7 +52,7 @@ impl ASTNode {
         ASTNode {
             start,
             end,
-            kind: ASTNodeType::Int { value },
+            r#type: ASTNodeType::Int { value },
         }
     }
 
@@ -60,7 +60,7 @@ impl ASTNode {
         ASTNode {
             start: op.start,
             end: operand.end,
-            kind: ASTNodeType::UnaryOpNode {
+            r#type: ASTNodeType::UnaryOpNode {
                 op: op.kind,
                 operand: Box::new(operand),
             },
@@ -71,7 +71,7 @@ impl ASTNode {
         ASTNode {
             start: lhs.start,
             end: rhs.end,
-            kind: ASTNodeType::BinaryOpNode {
+            r#type: ASTNodeType::BinaryOpNode {
                 op,
                 left: Box::new(lhs),
                 right: Box::new(rhs),
@@ -89,7 +89,7 @@ impl ASTNode {
         ASTNode {
             start,
             end,
-            kind: ASTNodeType::BinaryOpNode {
+            r#type: ASTNodeType::BinaryOpNode {
                 op,
                 left: Box::new(lhs),
                 right: Box::new(rhs),
@@ -101,10 +101,9 @@ impl ASTNode {
         ASTNode {
             start: self.start - 1,
             end: self.end + 1,
-            kind: self.kind,
+            r#type: self.r#type,
         }
     }
-
 }
 
 #[derive(Debug)]
