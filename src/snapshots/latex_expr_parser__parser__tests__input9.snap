@@ -5,36 +5,36 @@ expression: ast
 ASTNode {
     start: 0,
     end: 14,
-    kind: BinaryOpNode {
+    type: BinaryOpNode {
         op: Multiply,
         left: ASTNode {
             start: 0,
             end: 0,
-            kind: Int {
+            type: Int {
                 value: 2,
             },
         },
         right: ASTNode {
             start: 1,
             end: 14,
-            kind: BinaryOpNode {
+            type: BinaryOpNode {
                 op: Carrot,
                 left: ASTNode {
                     start: 1,
                     end: 12,
-                    kind: BinaryOpNode {
+                    type: BinaryOpNode {
                         op: Wedge,
                         left: ASTNode {
                             start: 2,
                             end: 2,
-                            kind: Identifier {
+                            type: Identifier {
                                 name: "a",
                             },
                         },
                         right: ASTNode {
                             start: 11,
                             end: 11,
-                            kind: Identifier {
+                            type: Identifier {
                                 name: "b",
                             },
                         },
@@ -43,7 +43,7 @@ ASTNode {
                 right: ASTNode {
                     start: 14,
                     end: 14,
-                    kind: Identifier {
+                    type: Identifier {
                         name: "3",
                     },
                 },

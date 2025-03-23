@@ -5,43 +5,43 @@ expression: ast
 ASTNode {
     start: 0,
     end: 9,
-    kind: BinaryOpNode {
+    type: BinaryOpNode {
         op: Plus,
         left: ASTNode {
             start: 0,
             end: 0,
-            kind: Identifier {
+            type: Identifier {
                 name: "c",
             },
         },
         right: ASTNode {
             start: 4,
             end: 9,
-            kind: BinaryOpNode {
+            type: BinaryOpNode {
                 op: Multiply,
                 left: ASTNode {
                     start: 4,
                     end: 4,
-                    kind: Int {
+                    type: Int {
                         value: 2,
                     },
                 },
                 right: ASTNode {
                     start: 5,
                     end: 9,
-                    kind: BinaryOpNode {
+                    type: BinaryOpNode {
                         op: Plus,
                         left: ASTNode {
                             start: 6,
                             end: 6,
-                            kind: Identifier {
+                            type: Identifier {
                                 name: "a",
                             },
                         },
                         right: ASTNode {
                             start: 8,
                             end: 8,
-                            kind: Identifier {
+                            type: Identifier {
                                 name: "b",
                             },
                         },

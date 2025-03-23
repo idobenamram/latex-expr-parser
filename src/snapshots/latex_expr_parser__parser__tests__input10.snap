@@ -5,17 +5,17 @@ expression: ast
 ASTNode {
     start: 0,
     end: 11,
-    kind: BinaryOpNode {
+    type: BinaryOpNode {
         op: Wedge,
         left: ASTNode {
             start: 0,
             end: 2,
-            kind: UnaryOpNode {
+            type: UnaryOpNode {
                 op: Minus,
                 operand: ASTNode {
                     start: 1,
                     end: 2,
-                    kind: Identifier {
+                    type: Identifier {
                         name: "ia",
                     },
                 },
@@ -24,7 +24,7 @@ ASTNode {
         right: ASTNode {
             start: 11,
             end: 11,
-            kind: Identifier {
+            type: Identifier {
                 name: "b",
             },
         },

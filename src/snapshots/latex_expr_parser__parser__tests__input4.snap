@@ -5,29 +5,29 @@ expression: ast
 ASTNode {
     start: 0,
     end: 29,
-    kind: BinaryOpNode {
+    type: BinaryOpNode {
         op: Frac,
         left: ASTNode {
             start: 6,
             end: 12,
-            kind: BinaryOpNode {
+            type: BinaryOpNode {
                 op: Plus,
                 left: ASTNode {
                     start: 6,
                     end: 8,
-                    kind: BinaryOpNode {
+                    type: BinaryOpNode {
                         op: Underscore,
                         left: ASTNode {
                             start: 6,
                             end: 6,
-                            kind: Identifier {
+                            type: Identifier {
                                 name: "a",
                             },
                         },
                         right: ASTNode {
                             start: 8,
                             end: 8,
-                            kind: Identifier {
+                            type: Identifier {
                                 name: "1",
                             },
                         },
@@ -36,7 +36,7 @@ ASTNode {
                 right: ASTNode {
                     start: 12,
                     end: 12,
-                    kind: Identifier {
+                    type: Identifier {
                         name: "b",
                     },
                 },
@@ -45,24 +45,24 @@ ASTNode {
         right: ASTNode {
             start: 15,
             end: 28,
-            kind: BinaryOpNode {
+            type: BinaryOpNode {
                 op: Wedge,
                 left: ASTNode {
                     start: 15,
                     end: 18,
-                    kind: BinaryOpNode {
+                    type: BinaryOpNode {
                         op: Underscore,
                         left: ASTNode {
                             start: 15,
                             end: 15,
-                            kind: Identifier {
+                            type: Identifier {
                                 name: "k",
                             },
                         },
                         right: ASTNode {
                             start: 18,
                             end: 18,
-                            kind: Identifier {
+                            type: Identifier {
                                 name: "s",
                             },
                         },
@@ -71,7 +71,7 @@ ASTNode {
                 right: ASTNode {
                     start: 28,
                     end: 28,
-                    kind: Identifier {
+                    type: Identifier {
                         name: "H",
                     },
                 },

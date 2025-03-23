@@ -5,12 +5,12 @@ expression: ast
 ASTNode {
     start: 0,
     end: 5,
-    kind: UnaryOpNode {
+    type: UnaryOpNode {
         op: Hat,
         operand: ASTNode {
             start: 5,
             end: 5,
-            kind: Identifier {
+            type: Identifier {
                 name: "a",
             },
         },

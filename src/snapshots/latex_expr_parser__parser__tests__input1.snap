@@ -5,24 +5,24 @@ expression: ast
 ASTNode {
     start: 0,
     end: 8,
-    kind: BinaryOpNode {
+    type: BinaryOpNode {
         op: Plus,
         left: ASTNode {
             start: 0,
             end: 4,
-            kind: BinaryOpNode {
+            type: BinaryOpNode {
                 op: Plus,
                 left: ASTNode {
                     start: 0,
                     end: 0,
-                    kind: Identifier {
+                    type: Identifier {
                         name: "a",
                     },
                 },
                 right: ASTNode {
                     start: 4,
                     end: 4,
-                    kind: Identifier {
+                    type: Identifier {
                         name: "b",
                     },
                 },
@@ -31,7 +31,7 @@ ASTNode {
         right: ASTNode {
             start: 8,
             end: 8,
-            kind: Identifier {
+            type: Identifier {
                 name: "c",
             },
         },
